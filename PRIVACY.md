@@ -14,10 +14,17 @@ This project has not established that a particular Arenti firmware is exploitabl
 
 ## What stays local
 
-- Camera video/control: local RTSP/ONVIF. Credentials stay on the Windows PC,
+- Windows camera video/control: local RTSP/ONVIF. Credentials stay on the Windows PC,
   encrypted for the Windows user using DPAPI. Discovery sends bounded local
   multicast/broadcast probes only when the user requests it.
-- Phone access: your Windows connector, pinned CA and individual client certificates.
+- Direct Android viewing: camera credentials are AES-GCM encrypted using an
+  Android Keystore key, separately from connector enrollment. Backup is disabled.
+  RTSP/TCP sockets are bound to Wi-Fi/Ethernet, the same IPv4 subnet, and the exact
+  configured camera IP/port. No DNS, cellular or VPN fallback. An anonymous
+  DESCRIBE must be rejected with an authentication challenge before playback.
+  This checks the selected stream, not every endpoint or the camera's identity.
+  Reserve the camera IP; RTSP authentication does not authenticate the server.
+- Paired phone access: your Windows connector, pinned CA and individual client certificates.
   QR enrollment happens on the LAN and expires after five minutes. Revocation is
   available in Phone access. The public APK contains no pre-enrolled home access.
 - Recording: only when the Windows user explicitly saves a screenshot or recording.
@@ -36,7 +43,9 @@ Use a trusted home LAN or a camera VLAN with only the necessary viewer access.
    and a targeted undo before applying camera-specific rules.
 2. **Identify and reserve the camera.** Use its hardware identity and DHCP reservation,
    not an IP that might later belong to another device. On a camera VLAN, allow the
-   Windows viewer to reach its local services and keep unwanted lateral access blocked.
+    Windows viewer to reach its local services and keep unwanted lateral access blocked.
+    Direct Android mode currently needs the phone on the camera's own IPv4 subnet;
+    use the Windows connector for routed camera-VLAN access.
 3. **Deny camera-to-WAN traffic across all protocols, for IPv4 and IPv6.** Preserve
    required LAN access. Remove camera port forwards and prevent UPnP from creating
    new ones. An inbound block alone does not stop outbound cloud sessions.

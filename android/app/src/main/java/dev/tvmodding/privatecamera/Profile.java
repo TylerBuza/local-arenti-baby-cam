@@ -66,37 +66,49 @@ final class Profile {
     }
 
     static final class Store {
-        private static final String ALIAS = "private-camera-settings";
+        private final String alias, preferences;
         private final Context context;
-        Store(Context context) { this.context = context.getApplicationContext(); }
+        Store(Context context) { this(context, "private-camera-settings", "private-connection"); }
+        Store(Context context, String alias, String preferences) {
+            this.context = context.getApplicationContext(); this.alias = alias; this.preferences = preferences;
+        }
         private SecretKey key() throws Exception {
             KeyStore store = KeyStore.getInstance("AndroidKeyStore");
             store.load(null);
-            if (!store.containsAlias(ALIAS)) {
+            if (!store.containsAlias(alias)) {
                 KeyGenerator generator = KeyGenerator.getInstance(KeyProperties.KEY_ALGORITHM_AES, "AndroidKeyStore");
-                generator.init(new KeyGenParameterSpec.Builder(ALIAS, KeyProperties.PURPOSE_ENCRYPT | KeyProperties.PURPOSE_DECRYPT)
+                generator.init(new KeyGenParameterSpec.Builder(alias, KeyProperties.PURPOSE_ENCRYPT | KeyProperties.PURPOSE_DECRYPT)
                     .setBlockModes(KeyProperties.BLOCK_MODE_GCM).setEncryptionPaddings(KeyProperties.ENCRYPTION_PADDING_NONE)
                     .setKeySize(256).build());
                 generator.generateKey();
             }
-            return (SecretKey) store.getKey(ALIAS, null);
+            return (SecretKey) store.getKey(alias, null);
         }
         void save(Profile profile) throws Exception {
+            saveJson(profile.json());
+        }
+        void saveJson(JSONObject json) throws Exception {
             Cipher cipher = Cipher.getInstance("AES/GCM/NoPadding");
             cipher.init(Cipher.ENCRYPT_MODE, key());
             cipher.updateAAD(new byte[]{1});
-            byte[] plain = profile.json().toString().getBytes(java.nio.charset.StandardCharsets.UTF_8);
+            byte[] plain = json.toString().getBytes(java.nio.charset.StandardCharsets.UTF_8);
             byte[] sealed = cipher.doFinal(plain), iv = cipher.getIV();
             if (iv.length != 12) throw new IllegalStateException("Unexpected GCM IV");
             byte[] envelope = new byte[13 + sealed.length];
             envelope[0] = 1;
             System.arraycopy(iv, 0, envelope, 1, 12);
             System.arraycopy(sealed, 0, envelope, 13, sealed.length);
-            context.getSharedPreferences("private-connection", Context.MODE_PRIVATE).edit()
-                .putString("sealed", Base64.encodeToString(envelope, Base64.NO_WRAP)).apply();
+            if (!context.getSharedPreferences(preferences, Context.MODE_PRIVATE).edit()
+                .putString("sealed", Base64.encodeToString(envelope, Base64.NO_WRAP)).commit())
+                throw new java.io.IOException("Could not save protected settings");
         }
         Profile load() throws Exception {
-            String saved = context.getSharedPreferences("private-connection", Context.MODE_PRIVATE).getString("sealed", null);
+            JSONObject json = loadJson();
+            return json == null ? null : new Profile(json);
+        }
+        void clear() { context.getSharedPreferences(preferences, Context.MODE_PRIVATE).edit().clear().apply(); }
+        JSONObject loadJson() throws Exception {
+            String saved = context.getSharedPreferences(preferences, Context.MODE_PRIVATE).getString("sealed", null);
             if (saved == null) return null;
             byte[] envelope = Base64.decode(saved, Base64.DEFAULT);
             if (envelope.length < 30 || envelope.length > 16384 || envelope[0] != 1)
@@ -104,8 +116,8 @@ final class Profile {
             Cipher cipher = Cipher.getInstance("AES/GCM/NoPadding");
             cipher.init(Cipher.DECRYPT_MODE, key(), new GCMParameterSpec(128, envelope, 1, 12));
             cipher.updateAAD(new byte[]{1});
-            return new Profile(new JSONObject(new String(cipher.doFinal(envelope, 13, envelope.length - 13),
-                java.nio.charset.StandardCharsets.UTF_8)));
+            return new JSONObject(new String(cipher.doFinal(envelope, 13, envelope.length - 13),
+                java.nio.charset.StandardCharsets.UTF_8));
         }
     }
 }

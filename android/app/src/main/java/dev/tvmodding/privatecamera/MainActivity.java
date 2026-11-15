@@ -37,6 +37,8 @@ import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.EditText;
+import android.widget.ScrollView;
 import android.widget.Toast;
 import androidx.activity.OnBackPressedCallback;
 import androidx.activity.result.ActivityResultLauncher;
@@ -58,6 +60,7 @@ import androidx.media3.common.util.Log;
 import androidx.media3.exoplayer.DefaultLoadControl;
 import androidx.media3.exoplayer.ExoPlayer;
 import androidx.media3.exoplayer.source.ProgressiveMediaSource;
+import androidx.media3.exoplayer.rtsp.RtspMediaSource;
 import androidx.media3.exoplayer.upstream.DefaultLoadErrorHandlingPolicy;
 import com.journeyapps.barcodescanner.ScanContract;
 import com.journeyapps.barcodescanner.ScanOptions;
@@ -87,6 +90,10 @@ public final class MainActivity extends AppCompatActivity {
     private final AdaptiveQualityPolicy adaptiveQuality = new AdaptiveQualityPolicy();
     private float playbackSpeed = 1f;
     private Profile profile;
+    private LocalCamera localCamera;
+    private LocalCameraStore localStore;
+    private LocalCameraConnection localConnection;
+    private boolean directMode;
     private FamilyAccess family;
     private boolean familyInFlight;
     private Profile.Store store;
@@ -143,7 +150,8 @@ public final class MainActivity extends AppCompatActivity {
         final AtomicBoolean movePending = new AtomicBoolean();
         Viewing(GatewayApi api, GatewayApi.Route route, String id) { this.api = api; this.route = route; this.id = id; }
     }
-    private final Runnable reconnect = () -> { if (active && !userStopped && (profile != null || family != null)) connect(); };
+    private boolean configured() { return directMode ? localCamera != null : profile != null || family != null; }
+    private final Runnable reconnect = () -> { if (active && !userStopped && configured()) connect(); };
     private final ConnectivityManager.NetworkCallback networks = new ConnectivityManager.NetworkCallback() {
         @Override public void onAvailable(Network network) {
             if (!network.equals(lastDefault)) { lastDefault = network; scheduleNetworkCheck(); }
@@ -191,6 +199,7 @@ public final class MainActivity extends AppCompatActivity {
                 main.post(() -> {
                     if (isFinishing() || expected != generation) return;
                     profile = paired;
+                    selectDirect(false);
                     userStopped = false;
                     status.setText("Connecting…");
                     connect();
@@ -225,6 +234,8 @@ public final class MainActivity extends AppCompatActivity {
         fullscreen = state != null && state.getBoolean("fullscreen", false);
         connectivity = (ConnectivityManager) getSystemService(CONNECTIVITY_SERVICE);
         store = new Profile.Store(this);
+        localStore = new LocalCameraStore(this);
+        directMode = getSharedPreferences("viewing-preferences", MODE_PRIVATE).getBoolean("directCamera", false);
         video = findViewById(R.id.video);
         findViewById(R.id.video_frame).addOnLayoutChangeListener((v, left, top, right, bottom, oldLeft, oldTop, oldRight, oldBottom) -> sizeOverlayControls());
         status = findViewById(R.id.status);
@@ -276,15 +287,10 @@ public final class MainActivity extends AppCompatActivity {
         }
         enablePtz(false);
         findViewById(R.id.ptz_stop).setOnClickListener(view -> releaseMovement(true));
-        findViewById(R.id.start).setOnClickListener(view -> { retryCount = 0; watchdog.reset(); audioUnavailable = audioInterrupted = false; userStopped = false; if (profile != null || family != null) connect(); else beginPairing(); });
+        findViewById(R.id.start).setOnClickListener(view -> { retryCount = 0; watchdog.reset(); audioUnavailable = audioInterrupted = false; userStopped = false; if (configured()) connect(); else connectionMenu(); });
         findViewById(R.id.stop).setOnClickListener(view -> stopByUser());
         findViewById(R.id.mute).setOnClickListener(view -> toggleMute());
-        findViewById(R.id.pair).setOnClickListener(view -> {
-            if (profile == null) beginPairing();
-            else new AlertDialog.Builder(this).setTitle("Pair with a home connector?")
-                .setMessage("This replaces the phone’s saved connection after successful pairing. No camera credentials are copied.")
-                .setNegativeButton("Cancel", null).setPositiveButton("Pair", (dialog, which) -> beginPairing()).show();
-        });
+        findViewById(R.id.pair).setOnClickListener(view -> connectionMenu());
         Spinner selector = findViewById(R.id.quality);
         ArrayAdapter<String> qualityItems = new ArrayAdapter<>(this, R.layout.quality_item, new String[]{"Auto", "High", "Low"});
         qualityItems.setDropDownViewResource(R.layout.quality_dropdown);
@@ -298,14 +304,16 @@ public final class MainActivity extends AppCompatActivity {
                     adaptiveQuality.select(selected, SystemClock.elapsedRealtime());
                     getSharedPreferences("viewing-preferences", MODE_PRIVATE).edit().putString("qualityMode", selected).apply();
                     watchdog.reset();
-                    if (profile != null && active && !userStopped) connect();
+                    if (configured() && active && !userStopped) connect();
                 }
             }
         });
         try { profile = store.load(); } catch (Exception ignored) { status.setText("Saved connection unavailable."); }
+        try { localCamera = localStore.load(); } catch (Exception ignored) { status.setText("Saved local camera unavailable. Open Connection to set it up again."); }
         try { family = FamilyAccess.load(this); } catch (Exception ignored) { status.setText("App access unavailable. Get an updated APK."); }
         if (family != null) findViewById(R.id.pair).setVisibility(View.GONE);
-        if (profile != null && userStopped) status.setText("Stopped.");
+        if (configured() && userStopped) status.setText("Stopped.");
+        updateConnectionControls();
         applyPresentation();
     }
     private boolean freshVideo() {
@@ -343,9 +351,9 @@ public final class MainActivity extends AppCompatActivity {
                 .setTrackTypeDisabled(C.TRACK_TYPE_AUDIO, !sound).build());
         }
     }
-    private boolean wantsVideo() { return active && !userStopped && (profile != null || family != null); }
+    private boolean wantsVideo() { return active && !userStopped && configured(); }
     private void adaptQuality() {
-        if (!wantsVideo() || player == null) return;
+        if (directMode || !wantsVideo() || player == null) return;
         // Audio focus interruptions are handled separately; do not mistake a
         // deliberate audio yield for insufficient video bandwidth.
         if (player.getPlayWhenReady() && player.getPlaybackSuppressionReason() == Player.PLAYBACK_SUPPRESSION_REASON_NONE
@@ -514,7 +522,7 @@ public final class MainActivity extends AppCompatActivity {
             recoverPlayback("Video stalled.");
         }
         boolean fresh = freshVideo();
-        if (player != null) {
+        if (player != null && !directMode) {
             LivePlaybackPolicy.Action action = livePolicy.sample(SystemClock.elapsedRealtime(), player.getCurrentPosition(),
                 player.getTotalBufferedDuration(), fresh);
             if (action == LivePlaybackPolicy.Action.RECONNECT) {
@@ -612,6 +620,70 @@ public final class MainActivity extends AppCompatActivity {
             .setPrompt("Scan the code shown by your Home Connector")
             .setOrientationLocked(false).setBeepEnabled(false).setBarcodeImageEnabled(false));
     }
+    private void selectDirect(boolean direct) {
+        directMode = direct;
+        getSharedPreferences("viewing-preferences", MODE_PRIVATE).edit().putBoolean("directCamera", direct).apply();
+        updateConnectionControls();
+    }
+    private void updateConnectionControls() {
+        findViewById(R.id.quality).setEnabled(!directMode);
+        findViewById(R.id.move_toggle).setVisibility(directMode ? View.GONE : View.VISIBLE);
+        setMovementExpanded(false);
+    }
+    private void connectionMenu() {
+        String[] options = localCamera == null
+            ? new String[]{"Set up local camera (no PC)", "Use Windows connector", "Pair Windows connector"}
+            : new String[]{"Use saved local camera (no PC)", "Edit local camera", "Use Windows connector", "Pair Windows connector", "Forget local camera"};
+        new AlertDialog.Builder(this).setTitle("Connection").setItems(options, (dialog, which) -> {
+            String option = options[which];
+            if (option.startsWith("Set up") || option.startsWith("Edit")) { localSetup(); return; }
+            if (option.startsWith("Pair")) { beginPairing(); return; }
+            if (option.startsWith("Forget")) {
+                stopByUser(); localStore.clear(); localCamera = null; selectDirect(false); return;
+            }
+            stopPlayback();
+            selectDirect(option.contains("local camera"));
+            userStopped = false; retryCount = 0; watchdog.reset();
+            if (configured()) connect(); else beginPairing();
+        }).setNegativeButton("Cancel", null).show();
+    }
+    private EditText cameraField(LinearLayout form, String hint, String value, boolean secret) {
+        EditText input = new EditText(this);
+        input.setHint(hint); input.setSingleLine(true);
+        input.setInputType(android.text.InputType.TYPE_CLASS_TEXT | (secret
+            ? android.text.InputType.TYPE_TEXT_VARIATION_PASSWORD : android.text.InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS));
+        input.setImportantForAutofill(View.IMPORTANT_FOR_AUTOFILL_NO);
+        input.setSaveEnabled(false); input.setText(value);
+        form.addView(input); return input;
+    }
+    private void localSetup() {
+        stopByUser();
+        LinearLayout form = new LinearLayout(this); form.setOrientation(LinearLayout.VERTICAL);
+        form.setPadding(dp(20), dp(8), dp(20), dp(8));
+        TextView help = new TextView(this);
+        help.setText("Use an already-enabled, password-protected RTSP stream on the same Wi-Fi/Ethernet subnet. Enter the stream URL from your camera documentation or ONVIF viewer. No PC is needed after setup. RTSP is not encrypted: use a trusted LAN. Sound depends on the camera codec. Movement and quality selection require the Windows connector.");
+        form.addView(help);
+        EditText url = cameraField(form, "rtsp://192.168.1.20:554/stream-path", localCamera == null ? "" : localCamera.url, false);
+        EditText username = cameraField(form, "Camera username", localCamera == null ? "" : localCamera.username, false);
+        EditText password = cameraField(form, "Camera password", localCamera == null ? "" : localCamera.password, true);
+        ScrollView scroll = new ScrollView(this); scroll.addView(form);
+        AlertDialog dialog = new AlertDialog.Builder(this).setTitle("Local camera · no PC").setView(scroll)
+            .setNegativeButton("Cancel", null).setPositiveButton("Save and connect", null).create();
+        dialog.setOnShowListener(ignored -> {
+            dialog.getWindow().addFlags(WindowManager.LayoutParams.FLAG_SECURE);
+            dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(button -> {
+                try {
+                    LocalCamera candidate = new LocalCamera(url.getText().toString().trim(), username.getText().toString(), password.getText().toString());
+                    localStore.save(candidate); localCamera = candidate; selectDirect(true);
+                    userStopped = false; retryCount = 0; watchdog.reset(); audioUnavailable = audioInterrupted = false;
+                    dialog.dismiss(); connect();
+                } catch (Exception error) {
+                    help.setText("Could not save. Use rtsp://PRIVATE-IP:PORT/path without embedded credentials, a username and password. Hostnames and public addresses are not supported.");
+                }
+            });
+        });
+        dialog.show();
+    }
     private void scheduleNetworkCheck() {
         main.post(() -> {
             main.removeCallbacks(networkCheck);
@@ -628,6 +700,7 @@ public final class MainActivity extends AppCompatActivity {
     };
     private void connect() {
         if (!active || userStopped) return;
+        if (directMode) { connectLocal(); return; }
         if (profile == null) { if (family != null) connectFamily(); return; }
         stopPlayback();
         final int expected = generation;
@@ -651,6 +724,39 @@ public final class MainActivity extends AppCompatActivity {
                         retryConnection(selected.remoteUrl.isEmpty() ? "Home PC unavailable. Remote access is not configured."
                             : "Home PC unavailable.");
                     }
+                });
+            }
+        });
+    }
+    private void connectLocal() {
+        if (localCamera == null) { status.setText("Open Connection to set up a local camera."); return; }
+        stopPlayback();
+        final int expected = generation;
+        status.setText("Connecting directly to camera…");
+        final LocalCameraConnection connection;
+        try {
+            connection = LocalCameraConnection.select(localCamera, connectivity);
+            localConnection = connection;
+        } catch (Exception ignored) {
+            retryConnection("Join the camera’s Wi-Fi/Ethernet subnet."); return;
+        }
+        io.execute(() -> {
+            try {
+                connection.requireAuthentication();
+                main.post(() -> {
+                    if (!active || userStopped || expected != generation) { connection.close(); return; }
+                    routeLabel.setText("Direct local camera · no PC");
+                    createPlayer(expected);
+                    player.setMediaSource(new RtspMediaSource.Factory().setSocketFactory(connection)
+                        .setForceUseRtpTcp(true).setTimeoutMs(8000).setDebugLoggingEnabled(false)
+                        .createMediaSource(MediaItem.fromUri(connection.playbackUri())));
+                    startPlayer();
+                });
+            } catch (Exception ignored) {
+                connection.close();
+                main.post(() -> {
+                    if (active && !userStopped && expected == generation)
+                        retryConnection("Camera unavailable or RTSP authentication not required. Check Connection settings.");
                 });
             }
         });
@@ -687,6 +793,12 @@ public final class MainActivity extends AppCompatActivity {
     }
     private void play(GatewayApi api, GatewayApi.Route route, int expected) {
         routeLabel.setText(route.label + " · " + adaptiveQuality.label());
+        createPlayer(expected);
+        ProgressiveMediaSource source = gatewaySource(api, route, expected);
+        player.setMediaSource(source);
+        startPlayer();
+    }
+    private void createPlayer(int expected) {
         status.setText("Starting live video…");
         player = new ExoPlayer.Builder(this).setLoadControl(new DefaultLoadControl.Builder()
             .setBufferDurationsMs(1250, 2000, 750, 1250).setPrioritizeTimeOverSizeThresholds(true).build()).build();
@@ -714,7 +826,9 @@ public final class MainActivity extends AppCompatActivity {
             }
         });
         video.setPlayer(player);
-        ProgressiveMediaSource source = new ProgressiveMediaSource.Factory(() -> new GatewayDataSource(api, route, id -> main.post(() -> {
+    }
+    private ProgressiveMediaSource gatewaySource(GatewayApi api, GatewayApi.Route route, int expected) {
+        return new ProgressiveMediaSource.Factory(() -> new GatewayDataSource(api, route, id -> main.post(() -> {
             if (expected != generation) return;
             Viewing current = new Viewing(api, route, id);
             viewing = current;
@@ -730,7 +844,8 @@ public final class MainActivity extends AppCompatActivity {
         }), () -> { if (expected == generation) lastStreamRead = SystemClock.elapsedRealtime(); }))
             .setLoadErrorHandlingPolicy(new DefaultLoadErrorHandlingPolicy(0))
             .createMediaSource(MediaItem.fromUri(route.origin + "/v1/live.mp4?quality=" + adaptiveQuality.quality()));
-        player.setMediaSource(source);
+    }
+    private void startPlayer() {
         player.prepare();
         player.play();
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
@@ -781,6 +896,7 @@ public final class MainActivity extends AppCompatActivity {
         }
     }
     private void stopPlayback() {
+        if (localConnection != null) { localConnection.close(); localConnection = null; }
         sockReadings = null;
         nextHealthPoll = 0;
         sockLabel.setVisibility(View.GONE);
@@ -821,8 +937,9 @@ public final class MainActivity extends AppCompatActivity {
             if (caps != null && caps.hasTransport(NetworkCapabilities.TRANSPORT_WIFI)) knownWifi.add(network);
         }
         connectivity.registerDefaultNetworkCallback(networks);
-        connectivity.registerNetworkCallback(new NetworkRequest.Builder().addTransportType(NetworkCapabilities.TRANSPORT_WIFI).build(), wifiNetworks);
-        if ((profile != null || family != null) && !userStopped) connect();
+        connectivity.registerNetworkCallback(new NetworkRequest.Builder().addTransportType(NetworkCapabilities.TRANSPORT_WIFI)
+            .addTransportType(NetworkCapabilities.TRANSPORT_ETHERNET).build(), wifiNetworks);
+        if (configured() && !userStopped) connect();
     }
     @Override protected void onPause() { releaseMovement(false); super.onPause(); }
     @Override protected void onNewIntent(Intent intent) {
@@ -834,7 +951,7 @@ public final class MainActivity extends AppCompatActivity {
         if (Intent.ACTION_MAIN.equals(intent.getAction()) && intent.hasCategory(Intent.CATEGORY_LAUNCHER)
                 && !isInPictureInPictureMode() && !enteringPip && userStopped) {
             userStopped = false; retryCount = 0; watchdog.reset(); audioUnavailable = audioInterrupted = false;
-            if (active && (profile != null || family != null)) connect();
+            if (active && configured()) connect();
         }
     }
     @Override protected void onResume() {

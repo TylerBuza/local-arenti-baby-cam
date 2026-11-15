@@ -9,7 +9,7 @@
                 <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:text="Local" android:textColor="@color/buza_ink" android:textSize="23sp" android:fontFamily="sans-serif-medium" />
                 <TextView style="@style/BuzaEyebrow" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="BABY CAM" />
             </LinearLayout>
-            <Button android:id="@+id/pair" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Pair phone" />
+            <Button android:id="@+id/pair" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Connection" />
         </LinearLayout>
         <TextView android:id="@+id/camera_heading" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="18dp"
             android:text="Camera" android:textColor="@color/buza_ink" android:textSize="28sp" android:fontFamily="sans-serif-medium" />

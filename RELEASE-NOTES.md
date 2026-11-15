@@ -1,4 +1,52 @@
-# v0.1.0-beta
+# v0.2.0-beta — Android direct local viewing
+
+Android can now stream directly from a password-protected local RTSP camera,
+without a running Windows PC.
+
+## Setup
+
+Install `Local-Arenti-Baby-Cam-0.2.0-beta.apk`, then open **Connection → Set up
+local camera (no PC)**. Enter the camera's existing RTSP URL, username and
+password. The phone and camera must share a Wi-Fi/Ethernet IPv4 subnet.
+The camera must already expose RTSP; this release does not add Android camera
+discovery or change camera settings. Obtain the correct stream path from your
+camera documentation or an ONVIF viewer.
+
+## Included
+
+- Direct RTSP-over-TCP, fullscreen, zoom, PiP, mute and automatic reconnect.
+- Separate Android Keystore AES-GCM storage for camera settings; Forget removes
+  them. Existing public installations update using the same public signing key.
+- Exact private-IP/port confinement and explicit Wi-Fi/Ethernet socket binding.
+  No direct cellular/VPN/DNS/routed-subnet fallback. Anonymous streams are refused
+  before credentials are provided to the player.
+- Saved Windows pairing remains available through Connection. Connector mode
+  still requires an awake PC; it provides pan/tilt, Auto/High/Low and any separately
+  configured remote route. Switching sources is explicit.
+
+Direct mode uses the entered stream URL, with no pan/tilt or quality selection.
+Audio/video codec support depends on the camera and Android decoder. RTSP itself
+is unencrypted: use a trusted LAN and reserve the camera IP. Local viewing does
+not block camera firmware internet traffic; see [PRIVACY.md](PRIVACY.md).
+
+Windows remains at v0.1.0-beta: [Windows installer](https://github.com/TylerBuza/local-arenti-baby-cam/releases/download/v0.1.0-beta/Local-Arenti-Baby-Cam-Windows-Setup-0.1.0-beta.exe).
+
+## Validation
+
+75 Android JVM tests and release build/lint passed. Four API36 emulator tests cover fresh
+direct setup, H264 playback and PCMU audio rendering, reconnect after a synthetic stream disconnect,
+encrypted settings/reload/tamper rejection, anonymous stream rejection,
+target confinement, Stop cancellation and existing Windows connector enrollment.
+All camera traffic in acceptance tests uses synthetic fixtures. Physical camera
+and physical phone acceptance remain pending; this is an early public beta.
+
+Public package: `dev.tvmodding.localarentibabycam` (versionCode2).
+Signing certificate SHA256:
+`eae74242052f905551688f54214a20b48e2f8ef4a9fd0d74fdbe7037e0fd9d05`.
+
+---
+
+# v0.1.0-beta (historical)
 
 First public, local-first Windows/Android release for password-protected,
 ONVIF/RTSP-enabled Arenti/D3 cameras.
