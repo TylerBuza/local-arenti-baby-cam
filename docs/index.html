@@ -1,55 +1,140 @@
 <!doctype html>
 <html lang="en">
 <head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Local Arenti Baby Cam — Your camera. Your network.</title>
-<meta name="description" content="A local-first privacy project for ONVIF/RTSP-enabled Arenti D3 baby cameras. Windows viewer, paired Android app, and practical camera internet-isolation guidance.">
-<meta name="theme-color" content="#0b121c"><link rel="stylesheet" href="style.css">
-<link rel="icon" href="icon.svg" type="image/svg+xml">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Local Arenti Baby Cam — Keep the view. Keep it local.</title>
+  <meta name="description" content="Local-first viewing for supported Arenti/D3 baby cameras. Download the Windows viewer and paired Android app, with practical guidance for keeping your camera off the internet.">
+  <meta name="theme-color" content="#f7f8f4">
+  <link rel="stylesheet" href="style.css">
+  <link rel="icon" href="icon.svg" type="image/svg+xml">
 </head>
 <body>
-<a class="skip" href="#main">Skip to content</a>
-<header class="wrap nav"><a class="brand" href="./"><img src="icon.svg" width="38" height="38" alt=""><span>LOCAL ARENTI<br><small>BABY CAM</small></span></a><nav aria-label="Main"><a href="#why">Why local?</a><a href="#setup">Setup</a><a href="#privacy">Block WAN</a><a href="https://github.com/TylerBuza/local-arenti-baby-cam">GitHub ↗</a></nav></header>
-<main id="main">
-<section class="wrap hero">
-<div><p class="eyebrow"><span class="dot"></span> LOCAL-FIRST · COMMUNITY BUILT · PUBLIC BETA</p>
-<h1>Your baby camera.<br><span>Your network.</span></h1>
-<p class="lead">Watching the next room shouldn’t need a trip through someone else’s cloud.</p>
-<p class="intro">Use a supported Arenti/D3 camera over your own network, with a Windows viewer and paired Android app. Get local viewing working. Then block the camera’s internet access—and verify it.</p>
-<div class="actions"><a class="button" href="#downloads">Get the apps <span aria-hidden="true">↓</span></a><a class="button secondary" href="#privacy">The privacy approach</a></div>
-<p class="fine">Independent project. Not affiliated with Arenti. Requires a camera with password-protected ONVIF/RTSP already enabled.</p></div>
-<div class="illustration" role="img" aria-label="A camera connects locally to a Windows computer, which provides authenticated viewing to a paired Android phone. Direct camera internet access is blocked at the router.">
-<div class="diagram-label">THE CONNECTION, SIMPLIFIED</div>
-<div class="device camera"><svg viewBox="0 0 64 48" aria-hidden="true"><rect x="5" y="7" width="37" height="34" rx="9"/><path d="m42 19 16-9v29l-16-9"/></svg><strong>Your camera</strong><small>ONVIF / RTSP</small></div>
-<div class="wire"><span>YOUR HOME NETWORK</span></div>
-<div class="device computer"><svg viewBox="0 0 64 48" aria-hidden="true"><rect x="4" y="4" width="56" height="34" rx="5"/><path d="M23 45h18M32 38v7"/></svg><strong>Windows viewer</strong><small>Local credentials · phone connector</small></div>
-<div class="wire short"><span>PAIRED TLS</span></div>
-<div class="device phone"><svg viewBox="0 0 64 48" aria-hidden="true"><rect x="19" y="2" width="26" height="44" rx="6"/><path d="M27 8h10M29 40h6"/></svg><strong>Your Android</strong><small>One-time pairing. Automatic reconnect.</small></div>
-<p class="blocked"><span aria-hidden="true">⊘</span> Camera → internet: block at your router</p>
-</div>
-</section>
-<section id="why" class="wrap section">
-<p class="eyebrow">LESS EXPOSURE. MORE CONTROL.</p><h2>A private room deserves<br>a smaller attack surface.</h2>
-<p class="section-lead">Cloud cameras add account logins, remote services and provider-side access to an already sensitive device. Local viewing removes those dependencies from the everyday video path.</p>
-<div class="grid three"><article><span class="index">01</span><h3>Fewer accounts in the loop</h3><p>The viewer uses local camera credentials. No vendor account, cloud signaling or automatic vendor-relay fallback during normal viewing.</p></article><article><span class="index">02</span><h3>Your recordings, your choice</h3><p>Windows saves a screenshot or video only when you ask. Android and the connector stream in memory. No app analytics or advertising.</p></article><article><span class="index">03</span><h3>A boundary you enforce</h3><p>Local-first software doesn’t stop camera firmware from phoning home. Router-level isolation is the second half of the project.</p></article></div>
-<aside class="source"><strong>The risk is documented. The claims should be specific.</strong><p>In the Ring case, the FTC alleged excessive employee access and inadequate account security; refunds followed the settlement in 2024. That illustrates a cloud-camera risk—not a claim that this project has found a vulnerability in Arenti firmware.</p><a href="https://www.ftc.gov/news-events/news/press-releases/2024/04/ftc-sends-refunds-ring-customers-stemming-2023-settlement-over-charges-company-failed-block">Read the FTC’s primary source ↗</a></aside>
-</section>
-<section id="downloads" class="download-section"><div class="wrap section">
-<p class="eyebrow">START WITH THE RIGHT EXPECTATIONS</p><h2>Two apps. Your own setup.</h2>
-<p class="section-lead">v0.1.0-beta targets ONVIF/RTSP-enabled Arenti/D3 hardware. It cannot unlock a disabled local interface, guess a password, or promise support for every Arenti model.</p>
-<div class="grid two">
-<article class="download"><span class="platform">WINDOWS 10 / 11 · X64</span><h3>The home viewer</h3><p>Camera discovery, local video and audio, Auto quality, recording, pop-out viewing and the connector for your phone.</p><a class="button" href="https://github.com/TylerBuza/local-arenti-baby-cam/releases/download/v0.1.0-beta/Local-Arenti-Baby-Cam-Windows-0.1.0-beta.zip">Download Windows setup ZIP</a><p class="fine">Requires Python3.13 x64. Extract and run Setup.cmd. Dependencies download during installation; this is a source-based installer, not a standalone signed EXE.</p></article>
-<article class="download"><span class="platform">ANDROID 8+ · DIRECT APK</span><h3>The paired phone viewer</h3><p>Live video and audio, zoom, fullscreen, Auto quality and clean picture-in-picture. Pair once with your own Windows connector.</p><a class="button secondary" href="https://github.com/TylerBuza/local-arenti-baby-cam/releases/download/v0.1.0-beta/Local-Arenti-Baby-Cam-0.1.0-beta.apk">Download Android APK</a><p class="fine">The Windows PC must stay on and awake. The public APK has no camera credentials, home addresses or shared family keys. Not a standalone phone-to-camera app.</p></article>
-</div><p class="fine release-links"><a href="https://github.com/TylerBuza/local-arenti-baby-cam/releases/tag/v0.1.0-beta">Release notes & checksums ↗</a> · <a href="https://github.com/TylerBuza/local-arenti-baby-cam">Inspect the source ↗</a></p>
-</div></section>
-<section id="setup" class="wrap section"><p class="eyebrow">DISCOVER → PAIR → RECONNECT</p><h2>Local first, from the first run.</h2>
-<ol class="steps"><li><div><h3>Enable the camera’s local interface</h3><p>Complete the manufacturer’s initial Wi-Fi setup if needed. Enable password-protected ONVIF/RTSP where your firmware supports it. The local password may differ from your cloud login.</p></div></li><li><div><h3>Find it from Windows</h3><p>Choose “Find cameras on this network,” select the service URL, enter local credentials and test. Manual URL entry works when discovery is blocked. Credentials are encrypted for your Windows user.</p></div></li><li><div><h3>Pair your phone</h3><p>On the same LAN, scan the short-lived QR in Windows → Phone access. Your phone gets its own certificate. After pairing, it reconnects automatically. Reserve the camera’s LAN IP for reliable reconnects.</p></div></li><li><div><h3>Test, then isolate</h3><p>Check local playback and recovery before blocking camera internet access. Keep required LAN access, and verify both IPv4 and IPv6 restrictions.</p></div></li></ol>
-</section>
-<section id="privacy" class="wrap section isolation"><div><p class="eyebrow">THE RECOMMENDED NEXT STEP</p><h2>Let the camera see the room.<br><span>Not the internet.</span></h2><p class="section-lead">Once setup works, deny the camera’s WAN access while preserving the local connections you actually need.</p></div>
-<div class="grid two"><article><h3>Block the device, not just a domain</h3><p>Use camera-specific rules or an isolated VLAN. Cover outbound traffic on all protocols, IPv4 and IPv6. Remove camera port forwards and prevent UPnP mappings. Consider existing sessions, DNS proxying and alternate routes.</p></article><article><h3>Verify the result</h3><p>Use firewall counters, logs and suitable captures. Check that new external sessions fail while local viewing survives. Retest after reconnects and safe restarts. A saved rule or an “offline” badge is not proof.</p></article></div>
-<p class="fine">Cloud alerts, vendor remote viewing, updates and some clock/sensor features may stop working. Plan maintenance deliberately. The project does not modify your router automatically.</p><a class="text-link" href="https://github.com/TylerBuza/local-arenti-baby-cam/blob/main/PRIVACY.md#block-the-camera-after-setup">Read the full isolation guide <span aria-hidden="true">→</span></a>
-</section>
-<section class="wrap section limits"><p class="eyebrow">HONEST LIMITS</p><h2>Local-first isn’t magic.</h2><div class="grid three"><article><h3>Trust your LAN</h3><p>Phone-to-PC uses authenticated TLS. Camera-side RTSP/ONVIF is not encrypted by that TLS connection. Segment and protect your home network.</p></article><article><h3>Remote is optional</h3><p>LAN-only is the default. Optional VPN/Funnel configuration adds external services and another access boundary. Never expose the camera’s own ports.</p></article><article><h3>This is an early beta</h3><p>The core viewer has run on one D3. Generic setup is tested with synthetic fixtures; independent users’ hardware remains to be validated. No guaranteed monitoring uptime.</p></article></div></section>
-</main>
-<footer class="wrap"><div class="brand"><img src="icon.svg" width="32" height="32" alt=""><span>LOCAL ARENTI BABY CAM</span></div><p>Built for keeping everyday viewing closer to home.<br>MIT project source · Third-party components retain their licenses.</p><div><a href="https://github.com/TylerBuza/local-arenti-baby-cam/issues">Compatibility & issues</a> · <a href="https://github.com/TylerBuza/local-arenti-baby-cam/blob/main/PRIVACY.md">Privacy</a></div><small>No project analytics or remote fonts. Hosted by GitHub Pages; GitHub’s hosting privacy terms apply.</small></footer>
-</body></html>
+  <svg class="icon-library" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+    <symbol id="arrow" viewBox="0 0 24 24"><path d="M5 12h14m-6-6 6 6-6 6"/></symbol>
+    <symbol id="download" viewBox="0 0 24 24"><path d="M12 3v12m-5-5 5 5 5-5M5 17v4h14v-4"/></symbol>
+    <symbol id="shield" viewBox="0 0 24 24"><path d="m12 3 8 3v6c0 5-8 9-8 9s-8-4-8-9V6l8-3Z"/><path d="m8 12 3 3 5-6"/></symbol>
+    <symbol id="camera" viewBox="0 0 24 24"><rect x="3" y="6" width="13" height="12" rx="3"/><path d="m16 10 5-3v10l-5-3"/></symbol>
+    <symbol id="phone" viewBox="0 0 24 24"><rect x="6" y="2" width="12" height="20" rx="3"/><path d="M10 5h4m-3 14h2"/></symbol>
+    <symbol id="windows" viewBox="0 0 24 24"><path d="M3 4h8v7H3zm10 0h8v7h-8zM3 13h8v7H3zm10 0h8v7h-8z"/></symbol>
+    <symbol id="github" viewBox="0 0 24 24"><path d="M9 19c-4 1-4-2-6-2m12 5v-4c0-1 .1-2-.6-2.6 3-.3 6.1-1.5 6.1-6.9A5.4 5.4 0 0 0 19 5.8 5 5 0 0 0 18.9 2S17.7 1.7 15 3.4a13 13 0 0 0-6 0C6.3 1.7 5.1 2 5.1 2A5 5 0 0 0 5 5.8a5.4 5.4 0 0 0-1.5 3.7c0 5.4 3.1 6.6 6.1 6.9C9 17 9 18 9 19v3"/></symbol>
+  </svg>
+  <a class="skip" href="#main">Skip to content</a>
+  <header class="header wrap">
+    <a class="brand" href="./" aria-label="Local Arenti Baby Cam home">
+      <img src="icon.svg" width="36" height="36" alt="">
+      <span>Local Arenti<span class="brand-sub">Baby Cam</span></span>
+    </a>
+    <nav aria-label="Main navigation">
+      <a href="#how-it-works">How it works</a>
+      <a href="#privacy">Privacy</a>
+      <a class="nav-source" href="https://github.com/TylerBuza/local-arenti-baby-cam">Source <span aria-hidden="true">↗</span></a>
+    </nav>
+    <a class="button button-small" href="#downloads">Get the apps <svg class="icon"><use href="#download"/></svg></a>
+  </header>
+
+  <main id="main">
+    <section class="hero wrap" aria-labelledby="hero-title">
+      <div class="hero-copy">
+        <a class="release-pill" href="https://github.com/TylerBuza/local-arenti-baby-cam/releases/tag/v0.1.0-beta"><span class="status-dot"></span> Open source. Local first. <span class="pill-version">BETA 0.1</span></a>
+        <h1 id="hero-title">Keep the view.<br>Keep it <em>local.</em></h1>
+        <p class="hero-description">A simpler connection to the next room. View your supported Arenti baby camera on Windows and Android, over your own network.</p>
+        <div class="hero-actions">
+          <a class="button" href="#downloads">Download the apps <svg class="icon"><use href="#arrow"/></svg></a>
+          <a class="text-link" href="#how-it-works">See how it works <span aria-hidden="true">↗</span></a>
+        </div>
+        <p class="hero-requirement">Made for ONVIF/RTSP-enabled Arenti/D3 cameras.<br>One-time local setup. Automatic reconnect.</p>
+      </div>
+
+      <figure class="product-scene" aria-label="Illustration of the desktop viewer and paired phone, with a drawn nursery instead of camera footage">
+        <div class="scene-orbit orbit-one"></div><div class="scene-orbit orbit-two"></div>
+        <div class="desktop-preview">
+          <div class="preview-titlebar"><span class="preview-brand"><svg class="icon"><use href="#camera"/></svg> Local Baby Cam</span><span class="window-buttons" aria-hidden="true">− &nbsp; □ &nbsp; ×</span></div>
+          <div class="preview-body">
+            <div class="preview-sidebar" aria-hidden="true"><span class="sidebar-active"><svg class="icon"><use href="#camera"/></svg></span><span><svg class="icon"><use href="#phone"/></svg></span><span><svg class="icon"><use href="#shield"/></svg></span><span class="sidebar-bottom">L</span></div>
+            <div class="preview-main">
+              <div class="preview-heading"><span>Live view<small>Your camera, close to home.</small></span><span class="preview-local"><i></i> LOCAL</span></div>
+              <div class="nursery-view"><img src="nursery.svg" width="640" height="420" alt="A minimal illustration of a quiet nursery with a crib, a plant and a moon"><span class="view-label">ILLUSTRATIVE VIEW</span></div>
+              <div class="preview-toolbar"><span><span class="status-dot"></span> Local connection</span><span class="quality-chip">Auto quality</span><span aria-hidden="true">⛶</span></div>
+            </div>
+          </div>
+        </div>
+        <div class="phone-preview" aria-hidden="true"><div class="phone-camera"></div><div class="phone-top">Local<span class="status-dot"></span></div><div class="phone-view"><img src="nursery.svg" width="640" height="420" alt=""></div><div class="phone-caption">A little peace of mind.<small>Paired with your PC</small></div><div class="phone-control"><svg class="icon"><use href="#camera"/></svg><span>Live view</span><span>⛶</span></div><div class="phone-home"></div></div>
+        <figcaption>WINDOWS + ANDROID <span>Product illustration · no camera footage</span></figcaption>
+      </figure>
+    </section>
+
+    <div class="proof-strip wrap" aria-label="Project features">
+      <span><svg class="icon"><use href="#shield"/></svg> No vendor cloud for viewing</span>
+      <span><svg class="icon"><use href="#phone"/></svg> Individually paired phones</span>
+      <span><svg class="icon"><use href="#github"/></svg> Open-source &amp; independently built</span>
+    </div>
+
+    <section id="downloads" class="section wrap" aria-labelledby="downloads-title">
+      <div class="section-heading">
+        <div><p class="eyebrow">THE APPS</p><h2 id="downloads-title">One camera. Two ways to check in.</h2></div>
+        <p>Start with the Windows viewer.<br>Pair your Android phone when you’re ready.</p>
+      </div>
+      <div class="download-grid">
+        <article class="download-card">
+          <div class="download-card-top"><span class="platform-icon"><svg class="icon"><use href="#windows"/></svg></span><span class="step-label">01 / START HERE</span></div>
+          <h3>Windows viewer</h3><p class="card-description">Your home base. Find your camera, watch locally, and connect your phone.</p>
+          <ul class="feature-list"><li>Live video &amp; audio with automatic recovery</li><li>Pop-out viewing, pan/tilt &amp; optional recording</li><li>Local credentials encrypted with Windows DPAPI</li></ul>
+          <a class="button" href="https://github.com/TylerBuza/local-arenti-baby-cam/releases/download/v0.1.0-beta/Local-Arenti-Baby-Cam-Windows-Setup-0.1.0-beta.exe">Download for Windows <svg class="icon"><use href="#download"/></svg></a>
+          <p class="download-meta">Windows 10/11 x64 <span>·</span> Installer EXE <span>·</span> v0.1.0-beta</p>
+          <div class="requirement"><strong>A guided setup, from start to finish.</strong> The installer handles Python and dependencies for you. Internet access is needed during setup; allow approximately 1.6 GB of disk space.</div>
+        </article>
+        <article class="download-card">
+          <div class="download-card-top"><span class="platform-icon"><svg class="icon"><use href="#phone"/></svg></span><span class="step-label">02 / TAKE THE VIEW WITH YOU</span></div>
+          <h3>Android companion</h3><p class="card-description">A quick glance, wherever you are on your home network. Scan, pair, and reconnect.</p>
+          <ul class="feature-list"><li>Fullscreen, zoom &amp; picture-in-picture</li><li>Live video &amp; audio with Auto quality</li><li>Your own phone certificate, never a shared key</li></ul>
+          <a class="button button-outline" href="https://github.com/TylerBuza/local-arenti-baby-cam/releases/download/v0.1.0-beta/Local-Arenti-Baby-Cam-0.1.0-beta.apk">Download for Android <svg class="icon"><use href="#download"/></svg></a>
+          <p class="download-meta">Android 8+ <span>·</span> Direct APK <span>·</span> v0.1.0-beta</p>
+          <div class="requirement"><strong>Requires the Windows connector.</strong> Keep your PC running and awake. The Android app connects through your PC, rather than directly to the camera.</div>
+        </article>
+      </div>
+      <div class="download-footnote"><p><span class="status-dot"></span> Early public beta for supported Arenti/D3 firmware.</p><a class="text-link" href="https://github.com/TylerBuza/local-arenti-baby-cam/releases/tag/v0.1.0-beta">Release notes &amp; checksums <span aria-hidden="true">↗</span></a></div>
+    </section>
+
+    <section id="how-it-works" class="setup-section section wrap" aria-labelledby="setup-title">
+      <div class="section-heading"><div><p class="eyebrow">A SMALL SETUP. A SHORTER PATH.</p><h2 id="setup-title">From the camera to your couch.</h2></div><a class="text-link" href="https://github.com/TylerBuza/local-arenti-baby-cam#install--connect">Full setup guide <span aria-hidden="true">↗</span></a></div>
+      <ol class="setup-steps">
+        <li><span class="step-number">01</span><h3>Enable local access</h3><p>Set up the camera’s Wi-Fi, then enable password-protected ONVIF/RTSP if your firmware supports it.</p></li>
+        <li><span class="step-number">02</span><h3>Find your camera</h3><p>Discover it in Windows and enter its local credentials. Test the video, then save your setup.</p></li>
+        <li><span class="step-number">03</span><h3>Pair your phone</h3><p>On the same LAN, scan the QR in Phone access. Your phone gets its own certificate and reconnects automatically.</p></li>
+        <li><span class="step-number">04</span><h3>Close the cloud path</h3><p>Once local viewing works, block the camera’s internet access at your router. Verify the result.</p></li>
+      </ol>
+      <p class="setup-tip">For reliable reconnects, reserve the camera and Windows PC’s LAN addresses in your router.</p>
+    </section>
+
+    <section id="privacy" class="privacy-section" aria-labelledby="privacy-title">
+      <div class="wrap privacy-layout">
+        <div class="privacy-copy"><p class="eyebrow">PRIVACY, BY DESIGN AND BY SETUP</p><h2 id="privacy-title">A private room.<br>A smaller <em>footprint.</em></h2><p>Every cloud account and remote service adds another place where access can go wrong. Local viewing keeps the everyday video path on your network.</p><p>The other half is up to your router: <strong>the app doesn’t stop camera firmware from contacting the internet.</strong></p><a class="button button-light" href="https://github.com/TylerBuza/local-arenti-baby-cam/blob/main/PRIVACY.md#block-the-camera-after-setup">Read the isolation guide <svg class="icon"><use href="#arrow"/></svg></a></div>
+        <div class="privacy-principles">
+          <article><span>01</span><div><h3>Keep the useful connection.</h3><p>Preserve camera-to-PC LAN access. Phone-to-PC viewing uses TLS and individual client certificates.</p></div></article>
+          <article><span>02</span><div><h3>Block the unnecessary one.</h3><p>Deny camera-to-WAN traffic across IPv4 and IPv6. Review port forwards, UPnP, DNS proxying and existing sessions.</p></div></article>
+          <article><span>03</span><div><h3>Verify, then rely on it.</h3><p>Check firewall logs and counters. Confirm local viewing still works. A vendor “offline” badge alone isn’t proof.</p></div></article>
+          <p class="privacy-note">Camera-side RTSP/ONVIF is not encrypted. Use a trusted or segmented LAN, and plan for firmware maintenance.</p>
+        </div>
+        <aside class="citation"><span>WHY IT MATTERS</span><p>The FTC’s Ring case documented cloud-camera privacy and security failures. It’s context for this approach, not evidence of an Arenti vulnerability. <a href="https://www.ftc.gov/news-events/news/press-releases/2024/04/ftc-sends-refunds-ring-customers-stemming-2023-settlement-over-charges-company-failed-block">Read the FTC report <span aria-hidden="true">↗</span></a></p></aside>
+      </div>
+    </section>
+
+    <section class="section wrap faq-section" aria-labelledby="faq-title">
+      <div><p class="eyebrow">BEFORE YOU DOWNLOAD</p><h2 id="faq-title">A few things<br>worth knowing.</h2><p class="faq-intro">A focused community project,<br>with clear boundaries.</p><a class="text-link" href="https://github.com/TylerBuza/local-arenti-baby-cam/issues">Ask a question <span aria-hidden="true">↗</span></a></div>
+      <div class="faq-list">
+        <details><summary>Will it work with my camera?<span class="plus" aria-hidden="true"></span></summary><div class="faq-answer"><p>This beta targets Arenti/D3 cameras with password-protected ONVIF and RTSP already enabled. It cannot unlock a local interface your firmware doesn’t offer or derive a local password from your cloud login.</p><p>The core viewer has run on one D3. Generic setup is tested with synthetic fixtures; independent users’ hardware remains unverified. This is not a promise of support for every Arenti model.</p></div></details>
+        <details><summary>Does my PC need to stay on?<span class="plus" aria-hidden="true"></span></summary><div class="faq-answer"><p>Yes. Android connects through the Windows connector, so that PC must stay running and awake. After initial setup and pairing, both apps reconnect automatically using their saved configuration.</p></div></details>
+        <details><summary>Can I watch away from home?<span class="plus" aria-hidden="true"></span></summary><div class="faq-answer"><p>LAN-only viewing is the default. Optional VPN or Tailscale/Funnel configuration is separate and adds external services and another access boundary. Never expose the camera’s own ONVIF/RTSP ports to the internet.</p></div></details>
+        <details><summary>What gets recorded or collected?<span class="plus" aria-hidden="true"></span></summary><div class="faq-answer"><p>Windows saves a screenshot or video only when you ask. Android and the connector stream in memory. The apps contain no advertising or analytics, and public downloads contain no pre-enrolled camera or family access.</p><p>This website has no project analytics, remote fonts or third-party scripts. GitHub hosts it and may process request metadata under its own privacy policy.</p></div></details>
+        <details><summary>Is this an official Arenti product?<span class="plus" aria-hidden="true"></span></summary><div class="faq-answer"><p>No. This is an independent, open-source community project, not affiliated with Arenti. It provides no medical alerts or guaranteed monitoring uptime. Project code is MIT licensed; dependencies retain their own licenses.</p></div></details>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer wrap">
+    <div class="footer-main"><a class="brand" href="./"><img src="icon.svg" width="32" height="32" alt=""><span>Local Arenti<span class="brand-sub">Baby Cam</span></span></a><p>Closer to home. By choice.</p><div class="footer-links"><a href="https://github.com/TylerBuza/local-arenti-baby-cam">GitHub ↗</a><a href="https://github.com/TylerBuza/local-arenti-baby-cam/blob/main/PRIVACY.md">Privacy</a><a href="https://github.com/TylerBuza/local-arenti-baby-cam/blob/main/THIRD-PARTY-NOTICES.md">Licenses</a></div></div>
+    <div class="footer-bottom"><span>© 2026 Tyler Buza · Independent community project.</span><span>No trackers. No remote fonts. Hosted on GitHub Pages.</span></div>
+  </footer>
+</body>
+</html>

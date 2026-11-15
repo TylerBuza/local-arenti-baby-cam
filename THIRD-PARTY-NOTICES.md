@@ -4,15 +4,22 @@ Project-authored code is MIT. Third-party components keep their own licenses.
 No Arenti SDK, vendor account client, firmware, private home credential or camera
 recording is distributed. The icon is drawn from project source.
 
-## Windows source-based setup
+## Windows installer and source-based setup
 
-The Windows ZIP contains project source and an installer, **not Python, Qt or FFmpeg
-binaries**. Python is installed by the user from python.org. Setup downloads official
+The Windows EXE contains an Inno Setup wizard and allowlisted project source,
+**not Python, Qt or FFmpeg binaries**. The wizard downloads the Python project's
+official NuGet x64 runtime (3.13.17, archive SHA256
+`dce409744b088f94c6e37ba41f8100c384c27e029e843237364c602d30d475e5`)
+and verifies the archive before executing it. The alternative source ZIP requires
+Python installed by the user. Both installers download official
 PyPI wheels; package metadata and included license texts remain in the installed
 runtime. The application imposes no restriction on replacing shared libraries or
 debugging modifications to LGPL components.
 
 - Python: PSF license — https://www.python.org/psf/license/
+- Inno Setup6.7.4: Copyright (C) 1997-2026 Jordan Russell; portions Copyright
+  (C) 2000-2026 Martijn Laan. Unmodified installer engine, retaining its upstream
+  copyright notices and addresses. License: https://github.com/jrsoftware/issrc/blob/is-6_7_4/license.txt
 - PySide6/Shiboken/Qt: LGPLv3 or applicable upstream terms — https://www.qt.io/licensing/open-source-lgpl-obligations
 - PyAV: BSD-3-Clause — https://github.com/PyAV-Org/PyAV
 - FFmpeg used by PyAV/Qt: LGPL/GPL depending on upstream build — https://ffmpeg.org/legal.html

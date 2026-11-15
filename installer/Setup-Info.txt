@@ -1,0 +1,12 @@
+LOCAL ARENTI BABY CAM
+Windows viewer and Android phone connector
+
+This installer sets up the application for your Windows user. It automatically downloads a private Python 3.13 x64 runtime from the Python project's NuGet distribution and application dependencies from PyPI. No separate Python installation is required.
+
+Internet access is required during installation. Allow several minutes and approximately 1.6 GB of disk space. The Python runtime archive is checked against a pinned SHA-256 hash before use.
+
+Your camera must already support enabled, password-protected ONVIF/RTSP. First launch guides you through local discovery and camera credentials. Android pairs with this PC; the PC must remain awake for phone viewing.
+
+Updating: exit the app normally from its system tray first. Setup does not stop an active viewer. Uninstall removes the application and its runtime, but keeps camera credentials and phone enrollment in %LOCALAPPDATA%\LocalArentiBabyCam. User-saved recordings are retained.
+
+Independent community beta. Not affiliated with Arenti. No camera firmware, router rules, or microphone settings are changed by setup.

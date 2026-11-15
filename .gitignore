@@ -8,6 +8,7 @@ __pycache__/
 *.jks
 *.keystore
 *.apk
+*.exe
 *.idsig
 *.zip
 .venv/

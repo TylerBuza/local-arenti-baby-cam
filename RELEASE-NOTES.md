@@ -5,18 +5,28 @@ ONVIF/RTSP-enabled Arenti/D3 cameras.
 
 ## Downloads
 
-- **Windows setup ZIP:** extract, install Python 3.13 x64 from python.org, then run
+- **Windows installer EXE (added after the initial release):** a per-user setup
+  wizard with automatic private Python runtime download, dependency installation,
+  Start menu/optional desktop shortcuts and an uninstaller. No manual Python
+  installation is required. Internet is needed during setup; allow about 1.6 GB
+  of disk space. The community installer is unsigned.
+- **Alternative Windows source setup ZIP:** extract, install Python 3.13 x64 from python.org, then run
   `Setup.cmd`. The per-user installer downloads dependencies from PyPI. This is
   source-based setup, not a standalone signed executable.
 - **Android APK:** Android 8 or newer. Pair with the Windows connector using its
   short-lived QR. The PC must remain awake. No preconfigured camera or family key.
-- **SHA256SUMS.txt:** hashes of both downloads.
+- **SHA256SUMS.txt:** hashes of the Windows EXE, original Windows ZIP and Android APK.
 
 After one-time local setup and phone pairing, the apps reconnect automatically.
 Reserve the camera and connector PC's LAN addresses for reliable reconnects.
 
 ## Validation
 
+- Added EXE: clean isolated install with its downloaded Python3.13.17 runtime,
+  installed UI and synthetic gateway checks, in-place installer rerun, Start menu
+  shortcut target and uninstall passed. Uninstall preserved an unowned test file.
+  Preflight rejected an unrelated folder and a simulated active viewer without
+  terminating it. All 37 installed payload files matched the build manifest.
 - 7 offline Python checks: discovery bounds, local-origin confinement, authenticated
   setup and refusal to save when anonymous access or video checks fail.
 - Clean isolated Windows installer run, installed disconnected UI self-test and
@@ -28,6 +38,8 @@ Reserve the camera and connector PC's LAN addresses for reliable reconnects.
 - Source and download contents reviewed for personal endpoints, private keys,
   enrollment payloads and unintended runtime/build files.
 - Project site checked at desktop and mobile widths.
+- Redesigned site checked at 320, 390, 768 and 1440 pixels, including internal
+  links, local images, FAQ interactions and absence of horizontal overflow.
 
 These checks use synthetic media and responses. The underlying viewer has run on
 one D3, but this generic onboarding flow has not yet been independently validated
