@@ -1,0 +1,7 @@
+<ripple xmlns:android="http://schemas.android.com/apk/res/android" android:color="#3367DFC5">
+    <item><selector>
+        <item android:state_focused="true"><shape><solid android:color="#214352"/><stroke android:width="2dp" android:color="@color/buza_accent"/><corners android:radius="14dp"/></shape></item>
+        <item android:state_enabled="false"><shape><solid android:color="#132331"/><stroke android:width="1dp" android:color="#263847"/><corners android:radius="14dp"/></shape></item>
+        <item><shape><solid android:color="#1E3345"/><stroke android:width="1dp" android:color="@color/buza_border"/><corners android:radius="14dp"/></shape></item>
+    </selector></item>
+</ripple>

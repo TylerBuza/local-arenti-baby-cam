@@ -1,0 +1,9 @@
+<resources>
+    <color name="buza_background">#0B121C</color>
+    <color name="buza_surface">#142332</color>
+    <color name="buza_border">#30495C</color>
+    <color name="buza_accent">#67DFC5</color>
+    <color name="buza_ink">#EDF4F8</color>
+    <color name="buza_muted">#A3B8C7</color>
+    <color name="buza_dark_ink">#082E2B</color>
+</resources>
